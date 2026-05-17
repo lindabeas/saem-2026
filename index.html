@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>University of Michigan SAEM 2026</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00274C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SAEM Schedule">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+
+body{
+    margin:0;
+    padding:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#f4f6f8;
+    color:#222;
+}
+
+header{
+    background:#00274C;
+    color:white;
+    padding:18px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:999;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+
+header img{
+    width:220px;
+    max-width:90%;
+    margin-bottom:10px;
+}
+
+h1{
+    margin:0;
+    font-size:24px;
+}
+
+.subhead{
+    margin-top:6px;
+    color:#FFCB05;
+    font-size:15px;
+}
+
+.top-controls{
+    padding:14px;
+    background:white;
+    position:sticky;
+    top:120px;
+    z-index:998;
+    border-bottom:1px solid #ddd;
+}
+
+.search-box{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+    box-sizing:border-box;
+    margin-bottom:10px;
+}
+
+.button-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.filter-btn{
+    background:#00274C;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.filter-btn:hover{
+    background:#014b8a;
+}
+
+.date-header{
+    background:#FFCB05;
+    color:#00274C;
+    font-weight:bold;
+    padding:14px;
+    margin-top:12px;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.day-content{
+    display:block;
+}
+
+.card{
+    background:white;
+    margin:12px;
+    padding:16px;
+    border-radius:16px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    position:relative;
+}
+
+.time{
+    font-weight:bold;
+    color:#00274C;
+    margin-bottom:8px;
+    font-size:15px;
+}
+
+.presenter{
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.title{
+    font-size:16px;
+    line-height:1.4;
+    margin-bottom:10px;
+}
+
+.location{
+    font-size:14px;
+    color:#666;
+    margin-bottom:10px;
+}
+
+.location:empty{
+    display:none;
+}
+
+.calendar-btn{
+    display:inline-block;
+    background:#FFCB05;
+    color:#00274C;
+    text-decoration:none;
+    padding:10px 14px;
+    border-radius:8px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.fav-btn{
+    position:absolute;
+    top:12px;
+    right:12px;
+    border:none;
+    background:none;
+    font-size:24px;
+    cursor:pointer;
+    color:#999;
+}
+
+.fav-btn.active{
+    color:#FFCB05;
+}
+
+.status-banner{
+    background:#e8f1ff;
+    border-left:6px solid #00274C;
+    padding:14px;
+    margin:12px;
+    border-radius:10px;
+    font-size:15px;
+}
+
+.hidden{
+    display:none !important;
+}
+
+footer{
+    text-align:center;
+    padding:30px;
+    color:#777;
+    font-size:14px;
+}
+
+@media(max-width:700px){
+
+    h1{
+        font-size:20px;
+    }
+
+    .card{
+        margin:10px;
+        padding:14px;
+    }
+
+    .presenter{
+        font-size:17px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<img src="logo.png" alt="University of Michigan">
+
+<h1>University of Michigan Faculty & Residents at SAEM 2026</h1>
+
+<div class="subhead">
+Atlanta, Georgia • May 18–21, 2026
+</div>
+
+</header>
+
+<div class="top-controls">
+
+<input
+type="text"
+id="searchBox"
+class="search-box"
+placeholder="Search presenter, topic, session..."
+onkeyup="searchCards()"
+>
+
+<div class="button-row">
+
+<button class="filter-btn" onclick="showAll()">
+All Sessions
+</button>
+
+<button class="filter-btn" onclick="showFavorites()">
+My Schedule
+</button>
+
+<button class="filter-btn" onclick="showNow()">
+Now Happening
+</button>
+
+<button class="filter-btn" onclick="showNext()">
+Happening Next
+</button>
+
+</div>
+
+</div>
+
+<div id="statusArea"></div>
+
+<div class="date-header" onclick="toggleDay(this)">Monday, May 18, 2026</div>
+<div class="day-content">
+
+<div class="card" data-time="8:00am-5:00pm" data-id="1">
+<button class="fav-btn" onclick="toggleFav(this)">★</button>
+<div class="time">8:00am - 5:00pm</div>
+<div class="presenter">Colin Greineder, MD, PhD, et al</div>
+<div class="title">SAEM26 Grant Writing Workshop: Strategies for Success in Academic Emergency Medicine</div>
+<div class="location">Int'l Hall 4: Level I</div>
+<a class="calendar-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=SAEM26+Grant+Writing+Workshop&dates=20260518T080000/20260518T170000&details=University+of+Michigan+SAEM+2026&location=Int%27l+Hall+4+Level+I">Add to Calendar</a>
+</div>
+
+<div class="card" data-time="8:00am-5:00pm" data-id="2">
+<button class="fav-btn" onclick="toggleFav(this)">★</button>
+<div class="time">8:00am - 5:00pm</div>
+<div class="presenter">Brian Zink, MD</div>
+<div class="title">SAEM26 Leadership Forum</div>
+<div class="location">Int'l Hall 10: Level I</div>
+<a class="calendar-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=SAEM26+Leadership+Forum&dates=20260518T080000/20260518T170000">Add to Calendar</a>
+</div>
+
+</div>
+
+<div class="date-header" onclick="toggleDay(this)">Tuesday, May 19, 2026</div>
+<div class="day-content">
+
+<div class="card" data-time="8:00am-8:12am" data-id="3">
+<button class="fav-btn" onclick="toggleFav(this)">★</button>
+<div class="time">8:00am - 8:12am</div>
+<div class="presenter">Hannah Forte, MD</div>
+<div class="title">Variation in Evaluation of Suspected Physical Child Abuse across Pediatric Emergency Departments</div>
+<div class="location">Int'l Hall 9: Level I</div>
+<a class="calendar-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Variation+in+Evaluation+of+Suspected+Physical+Child+Abuse">Add to Calendar</a>
+</div>
+
+<div class="card" data-time="11:00am-11:12am" data-id="4">
+<button class="fav-btn" onclick="toggleFav(this)">★</button>
+<div class="time">11:00am - 11:12am</div>
+<div class="presenter">Nate Haas, MD</div>
+<div class="title">Continuous Ketone Monitoring in Diabetic Ketoacidosis: Multicenter Method-Comparison Study</div>
+<div class="location">Int'l Hall 10: Level I</div>
+<a class="calendar-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Continuous+Ketone+Monitoring+in+DKA">Add to Calendar</a>
+</div>
+
+<div class="card" data-time="3:00pm-3:50pm" data-id="5">
+<button class="fav-btn" onclick="toggleFav(this)">★</button>
+<div class="time">3:00pm - 3:50pm</div>
+<div class="presenter">Cheney Gertz, PharmD, PGY2</div>
+<div class="title">Brain Games: When Alzheimer Disease Infusions and Stroke Therapy Collide</div>
+<div class="location">Atrium Ballroom B-C Level A</div>
+<a class="calendar-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Brain+Games">Add to Calendar</a>
+</div>
+
+</div>
+
+<div class="date-header" onclick="toggleDay(this)">Wednesday, May 20, 2026</div>
+<div class="day-content">
+
+<div class="card" data-time="8:00am-8:08am" data-id="6">
+<button class="fav-btn" onclick="toggleFav(this)">★</button>
+<div class="time">8:00am - 8:08am</div>
+<div class="presenter">Shriya Ejanthker</div>
+<div class="title">Automated Abstraction of the AORTAs Score for Estimating Pretest Clinical Probability</div>
+<div class="location">Int'l Hall 9: Level I</div>
+<a class="calendar-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=AORTAs+Score+Presentation">Add to Calendar</a>
+</div>
+
+<div class="card" data-time="2:00pm-2:50pm" data-id="7">
+<button class="fav-btn" onclick="toggleFav(this)">★</button>
+<div class="time">2:00pm - 2:50pm</div>
+<div class="presenter">Alyssa Valentyne, MD</div>
+<div class="title">Tick-Borne Diseases Driven by Climate Change</div>
+<div class="location">Int'l Hall 4: Level I</div>
+<a class="calendar-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Tick-Borne+Diseases">Add to Calendar</a>
+</div>
+
+</div>
+
+<div class="date-header" onclick="toggleDay(this)">Thursday, May 21, 2026</div>
+<div class="day-content">
+
+<div class="card" data-time="9:30am-10:30am" data-id="8">
+<button class="fav-btn" onclick="toggleFav(this)">★</button>
+<div class="time">9:30am - 10:30am</div>
+<div class="presenter">Sam Malakhovsky, MD; et al</div>
+<div class="title">Got Handcuffs? Got Keys? Everything you Should Probably Know About Handcuffs</div>
+<div class="location">M301: Level M</div>
+<a class="calendar-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Got+Handcuffs+Got+Keys">Add to Calendar</a>
+</div>
+
+</div>
+
+<footer>
+
+University of Michigan Emergency Medicine<br>
+SAEM Annual Meeting 2026
+
+</footer>
+
+<script>
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+}
+
+function toggleDay(header){
+    const content = header.nextElementSibling;
+
+    if(content.style.display === 'none'){
+        content.style.display = 'block';
+    } else {
+        content.style.display = 'none';
+    }
+}
+
+function searchCards(){
+
+    let input=document.getElementById('searchBox').value.toLowerCase();
+
+    let cards=document.querySelectorAll('.card');
+
+    cards.forEach(card=>{
+
+        let text=card.innerText.toLowerCase();
+
+        if(text.includes(input)){
+            card.classList.remove('hidden');
+        } else {
+            card.classList.add('hidden');
+        }
+
+    });
+
+}
+
+function showAll(){
+
+    document.querySelectorAll('.card').forEach(card=>{
+        card.classList.remove('hidden');
+    });
+
+    document.getElementById('statusArea').innerHTML='';
+
+}
+
+function toggleFav(btn){
+
+    btn.classList.toggle('active');
+
+    let card=btn.closest('.card');
+
+    let id=card.dataset.id;
+
+    let favs=JSON.parse(localStorage.getItem('favorites') || '[]');
+
+    if(favs.includes(id)){
+        favs=favs.filter(f=>f!==id);
+    } else {
+        favs.push(id);
+    }
+
+    localStorage.setItem('favorites',JSON.stringify(favs));
+
+}
+
+function loadFavorites(){
+
+    let favs=JSON.parse(localStorage.getItem('favorites') || '[]');
+
+    document.querySelectorAll('.card').forEach(card=>{
+
+        let id=card.dataset.id;
+
+        let btn=card.querySelector('.fav-btn');
+
+        if(favs.includes(id)){
+            btn.classList.add('active');
+        }
+
+    });
+
+}
+
+function showFavorites(){
+
+    let favs=JSON.parse(localStorage.getItem('favorites') || '[]');
+
+    document.querySelectorAll('.card').forEach(card=>{
+
+        let id=card.dataset.id;
+
+        if(favs.includes(id)){
+            card.classList.remove('hidden');
+        } else {
+            card.classList.add('hidden');
+        }
+
+    });
+
+    document.getElementById('statusArea').innerHTML=
+    "<div class='status-banner'><strong>Showing:</strong> My Schedule</div>";
+
+}
+
+function parseTime(str){
+
+    if(!str) return null;
+
+    let first=str.split('-')[0].trim();
+
+    let match=first.match(/(\d+):(\d+)(am|pm)/i);
+
+    if(!match) return null;
+
+    let h=parseInt(match[1]);
+    let m=parseInt(match[2]);
+    let ap=match[3].toLowerCase();
+
+    if(ap==='pm' && h!==12) h+=12;
+    if(ap==='am' && h===12) h=0;
+
+    return h*60+m;
+
+}
+
+function currentMinutes(){
+
+    let now=new Date();
+
+    return now.getHours()*60+now.getMinutes();
+
+}
+
+function showNow(){
+
+    let now=currentMinutes();
+
+    let found=false;
+
+    document.querySelectorAll('.card').forEach(card=>{
+
+        let t=card.dataset.time;
+
+        if(!t){
+            card.classList.add('hidden');
+            return;
+        }
+
+        let parts=t.split('-');
+
+        if(parts.length<2){
+            card.classList.add('hidden');
+            return;
+        }
+
+        let start=parseTime(parts[0]);
+        let end=parseTime(parts[1]);
+
+        if(start===null || end===null){
+            card.classList.add('hidden');
+            return;
+        }
+
+        if(now>=start && now<=end){
+
+            card.classList.remove('hidden');
+            found=true;
+
+        } else {
+
+            card.classList.add('hidden');
+
+        }
+
+    });
+
+    document.getElementById('statusArea').innerHTML=
+    "<div class='status-banner'><strong>Showing:</strong> Now Happening</div>";
+
+    if(!found){
+
+        document.getElementById('statusArea').innerHTML+=
+        "<div class='status-banner'>No sessions currently happening.</div>";
+
+    }
+
+}
+
+function showNext(){
+
+    let now=currentMinutes();
+
+    let nextCard=null;
+    let nextTime=999999;
+
+    document.querySelectorAll('.card').forEach(card=>{
+
+        let t=card.dataset.time;
+
+        if(!t) return;
+
+        let parts=t.split('-');
+
+        let start=parseTime(parts[0]);
+
+        if(start!==null && start>now && start<nextTime){
+
+            nextTime=start;
+            nextCard=card;
+
+        }
+
+    });
+
+    document.querySelectorAll('.card').forEach(card=>{
+        card.classList.add('hidden');
+    });
+
+    if(nextCard){
+
+        nextCard.classList.remove('hidden');
+
+        document.getElementById('statusArea').innerHTML=
+        "<div class='status-banner'><strong>Showing:</strong> Happening Next</div>";
+
+    } else {
+
+        document.getElementById('statusArea').innerHTML=
+        "<div class='status-banner'>No upcoming sessions found.</div>";
+
+    }
+
+}
+
+loadFavorites();
+
+</script>
+
+</body>
+</html>
